@@ -17,9 +17,11 @@ const Form = () => {
 
   const { employeeId } = useParams<UrlParams>();
 
-  const [selectDepartments, setSelectDepartments] = useState<Department[]>([]);
-
   const isEditing = employeeId !== 'create';
+
+  const history = useHistory();
+
+  const [selectDepartments, setSelectDepartments] = useState<Department[]>([]);
 
   const {
     register,
@@ -30,19 +32,21 @@ const Form = () => {
   } = useForm<Employee>();
 
   useEffect(() => {
-    requestBackend({ url: '/departments', withCredentials: true }).then((response) => {
-      setSelectDepartments(response.data);
-    });
+    requestBackend({ url: '/departments', withCredentials: true })
+      .then((response) => {
+        setSelectDepartments(response.data);
+      });
   }, []);
 
   useEffect(() => {
     if (isEditing) {
-      requestBackend({ url: `/employees/${employeeId}` }).then((response) => {
-        const employee = response.data as Employee;
-        setValue('name', employee.name);
-        setValue('email', employee.email);
-        setValue('department', employee.department);
-      });
+      requestBackend({ url: `/employees/${employeeId}` })
+        .then((response) => {
+          const employee = response.data as Employee;
+          setValue('name', employee.name);
+          setValue('email', employee.email);
+          setValue('department', employee.department);
+        });
     }
   }, [isEditing, employeeId, setValue]);
 
@@ -68,8 +72,6 @@ const Form = () => {
         toast.error('Erro ao cadastrar produto')
       })
   };
-
-  const history = useHistory();
 
   const handleCancel = () => {
     history.push('/admin/employees');
@@ -129,7 +131,9 @@ const Form = () => {
                 rules={{ required: true }}
                 control={control}
                 render={({ field }) => (
+
                   <Select
+                    placeholder="Departamento"
                     {...field}
                     options={selectDepartments}
                     classNamePrefix="product-crud-select"
